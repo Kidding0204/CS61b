@@ -24,7 +24,7 @@ public class HexWorld {
             this.z = y;
         }
     }
-    public static TETile[][] createWorld(TERenderer ter,int width, int height) {
+    public static TETile[][] createWorld(TERenderer ter, int width, int height) {
         ter.initialize(width, height);
         TETile[][] world = new TETile[width][height];
         for (int x = 0; x < width; x += 1) {

@@ -9,6 +9,16 @@ public class Game {
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
 
+    private static class Command {
+        private char first;
+        private long seed;
+        private char last;
+
+        private void getCommand(String input) {
+            first = input.charAt(0);
+        }
+    }
+
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
      */
@@ -32,7 +42,12 @@ public class Game {
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
 
-        TETile[][] finalWorldFrame = null;
-        return finalWorldFrame;
+        Command information = new Command();
+        information.getCommand(input);
+        if (information.first == 'N' || information.first == 'n') {
+            return WorldCreator.create(ter, WIDTH, HEIGHT, information.seed);
+        }
+
+        return null;
     }
 }
