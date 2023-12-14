@@ -10,13 +10,14 @@ import static byog.Core.RandomUtils.bernoulli;
 public class WorldCreator {
     private final int width;
     private final int height;
-    private final Random random;
+    private static long seed;
+    private static final Random random = new Random(seed);
     private final TERenderer ter;
     public WorldCreator(TERenderer ter, int width, int height, long seed) {
 
         this.width = width;
         this.height = height;
-        this.random = new Random(seed);
+        WorldCreator.seed = seed;
         this.ter = ter;
     }
 
@@ -56,7 +57,7 @@ public class WorldCreator {
         return switch (choice) {
             case 0 -> new Hallway(entrance, length);
             case 1 -> new Corner(entrance, length, rotateDirection);
-            case 2 -> new Room(entrance, width1, width2, maxLength, random);
+            case 2 -> new Room(entrance, width, maxLength, random);
             default -> null;
         };
     }
@@ -79,9 +80,22 @@ public class WorldCreator {
         TETile[][] world = creator.createWorld();
 
         Plug entrance = creator.createEntrance();
-        /*Building randomBuilding = creator.randomlyMerge(entrance, 7);
-        randomBuilding.drawBuilding(world);*/
-        new Room(entrance, 2, 3, 5, creator.random).drawBuilding(world);
+        Building randomBuilding = creator.randomlyMerge(entrance, 7);
+        entrance.t = Tileset.LOCKED_DOOR;
+        randomBuilding.drawBuilding(world);
+        /*for (int i = 0; i < randomBuilding.getExits().length; i++) {
+            creator.randomlyMerge(randomBuilding.getExits()[i], 7).drawBuilding(world);
+        }*/
+        entrance.drawDot(world);
+        /*Hallway hallway = new Hallway(entrance, 5);
+        hallway.drawBuilding(world);
+        Corner corner = new Corner(hallway.getExits()[0],5, true);
+        corner.drawBuilding(world);
+        Room room = new Room(corner.getExits()[0], 4, 6, random);
+        room.drawBuilding(world);
+        Hallway hallway1 = new Hallway(room.getExits()[0], 3);
+        hallway1.drawBuilding(world);*/
+
         ter.renderFrame(world);
     }
 }

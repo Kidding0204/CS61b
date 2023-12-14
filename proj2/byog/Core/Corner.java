@@ -17,6 +17,6 @@ public class Corner extends Building{
         floors[1] = floors[0].getVerticalLine(0, floors[0].length + 1, rotateDirection);
         walls[2] = walls[0].getVerticalLine(0, walls[0].length, rotateDirection);
         walls[3] = walls[1].getVerticalLine(0, walls[1].length, rotateDirection);
-        exits[0] = new Plug(floors[1].end, exit.direction);
+        exits[0] = new Plug(floors[1].end, floors[1].direction);
     }
 }

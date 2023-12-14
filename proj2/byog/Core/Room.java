@@ -1,65 +1,71 @@
 package byog.Core;
 
-import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
 import java.util.Random;
-import static byog.Core.RandomUtils.bernoulli;
 import static byog.Core.RandomUtils.uniform;
 
 public class Room extends Building{
 
-    public Room(Plug exit, int width1, int width2, int length, Random random) {
+    public Room(Plug entrance, int width, int length, Random random) {
+        Plug exit = new Plug(entrance, entrance.direction);
+        int leftWidth = uniform(random, 1, width - 1);
+        int rightWidth = width - leftWidth - 1;
 
-        floors = new Line[width1 + width2 - 3];
-        Line entranceFloor = new Line(exit, exit.direction, length);
-        Line[] floor1 = entranceFloor.getSquare(width1 - 1, -1);
-        Line[] floor2 = entranceFloor.getSquare(width2 - 1, 1);
-        System.arraycopy(floor1, 0, floors, 0, floor1.length);
-        System.arraycopy(floor2, 1, floors, floor1.length, floor2.length - 1);
+        floors = new Line[width - 2];
+        floors[0] = new Line(exit, exit.direction, length);
+        Line[] leftFloors = floors[0].getSquare(leftWidth + 1, -1);
+        Line[] rightFloors = floors[0].getSquare(rightWidth + 1, 1);
+        System.arraycopy(leftFloors, 1, floors, 1, leftFloors.length - 2);
+        System.arraycopy(rightFloors, 1, floors, leftFloors.length - 1, rightFloors.length - 2);
 
-        walls = new Line[4];
-        int width = width1 + width2 - 1;
-        walls[0] = floors[floors.length - 1].getParallelLine(1, length);
-        walls[1] = walls[0].getVerticalLine(0, width, false);
-        walls[2] = walls[1].getVerticalLine(0, length, false);
-        walls[3] = walls[2].getVerticalLine(0, width, true);
+        walls = new Line[5];
+        walls[0] = leftFloors[leftWidth];
+        walls[1] = rightFloors[rightWidth];
+        walls[2] = walls[0].getVerticalLine(0, width, true);
+        walls[3] = walls[0].getVerticalLine(-length + 1, leftWidth, true);
+        walls[4] = walls[1].getVerticalLine(-length + 1, rightWidth, false);
 
-        int exitNum = uniform(random,1, 4);
-        exits = new Plug[exitNum];
-        for (int i = 0; i < exitNum; i++) {
-            Line wall = walls[random.nextInt(4)];
-            int index = random.nextInt(wall.length);
-            Dot plugDot = wall.dots[index];
-            if (plugDot.p.equals(floors[0].end.p) || index == 0) {
-                continue;
-            }
-            boolean[] plugDirection = new boolean[2];
-            plugDirection[0] = !wall.direction[0];
-            if (plugDirection[0]) {
-                plugDirection[1] = wall.direction[1];
-            } else {
-                plugDirection[1] = !wall.direction[1];
-            }
-            exits[i] = new Plug(plugDot,plugDirection);
-        }
+        exits = randomPlugs(exit, walls, random);
     }
 
-    @Override
-    public void drawBuilding(TETile[][] world) {
-        for (Line f : floors) {
-            f.t = Tileset.FLOOR;
-            f.drawLine(world);
+    private static Plug randomPlug(Plug exit, Line currentWall, Random random, int randomNum) {
+        boolean[] exitDirection = new boolean[2];
+        exitDirection[0] = !currentWall.direction[0];
+        if (randomNum == 2) {
+            exitDirection[1] = exit.direction[1];
+        } else if (randomNum == 1) {
+            if (!exit.direction[0]) {
+                exitDirection[1] = exit.direction[1];
+            } else {
+                exitDirection[1] = !exit.direction[1];
+            }
+        } else {
+            if (exit.direction[0]) {
+                exitDirection[1] = !exit.direction[1];
+            } else {
+                exitDirection[1] = exit.direction[1];
+            }
         }
-        for (Line wall : walls) {
-            wall.t = Tileset.WALL;
-            wall.drawLine(world);
+        return new Plug(currentWall.dots[uniform(random, 1, currentWall.length - 1)], exitDirection);
+    }
+
+    private static Plug[] randomPlugs(Plug exit, Line[] walls, Random random) {
+        int exitsNum = uniform(random, 0, 3);
+        Plug[] exits = new Plug[exitsNum];
+        int previousNum = -1;
+
+        for (int i = 0; i < exitsNum; i++) {
+            int randomNum = uniform(random, 3);
+            if (randomNum == previousNum) {
+                i--;
+                continue;
+            }
+
+            Line randomWall = walls[randomNum];
+            previousNum = randomNum;
+            exits[i] = randomPlug(exit, randomWall, random, randomNum);
         }
-        for (Dot exit : exits) {
-            exit.t = Tileset.FLOOR;
-            exit.drawDot(world);
-        }
-        floors[0].end.t = Tileset.FLOOR;
-        floors[0].end.drawDot(world);
+        return exits;
     }
 }
