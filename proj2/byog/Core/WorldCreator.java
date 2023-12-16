@@ -33,7 +33,7 @@ public class WorldCreator {
        return new Plug(new Dot(randomPos, Tileset.LOCKED_DOOR), randomDirection);
     }
 
-    public TETile[][] createWorld() {
+    private TETile[][] createWorld() {
 
         ter.initialize(width, height);
         TETile[][] world = new TETile[width][height];
@@ -47,7 +47,7 @@ public class WorldCreator {
         return world;
     }
 
-    public Building randomlyMerge(Plug entrance, int maxLength) {
+    private Building randomBuilding(Plug entrance, int maxLength) {
         int choice = random.nextInt(3);
         int length = uniform(random, 1, maxLength);
         boolean rotateDirection = bernoulli(random);
@@ -62,6 +62,35 @@ public class WorldCreator {
         };
     }
 
+    private void randomlyMerge(Building[] buildings, int maxLength, int count, int currentCount) {
+        if (count == buildings.length) {
+            return;
+        }
+
+        Building current = buildings[currentCount];
+        currentCount += 1;
+        int buildingNum = current.exits.length;
+        for (int i = 0; i < buildingNum; i++) {
+            buildings[count] = randomBuilding(current.exits[i], maxLength);
+            count++;
+            if (count == buildings.length) {
+                break;
+            }
+        }
+
+        for (int i = 0; i < buildingNum; i++) {
+            randomlyMerge(buildings, maxLength, count, currentCount + i);
+        }
+    }
+    private Building[] allConcrete(Plug entrance, int maxLength, int maxBuildings) {
+        Building[] buildings = new Building[maxBuildings];
+        Building origination = randomBuilding(entrance, maxLength);
+        buildings[0] = origination;
+
+        randomlyMerge(buildings, maxLength, 1, 0);
+        return buildings;
+    }
+
     public static TETile[][] create(TERenderer ter, int width, int height, long seed) {
 
         WorldCreator creator = new WorldCreator(ter, width, height, seed);
@@ -73,6 +102,7 @@ public class WorldCreator {
         return world;
     }
 
+
     public static void main(String[] args) {
         TERenderer ter = new TERenderer();
         WorldCreator creator = new WorldCreator(ter, 100, 60, 123123);
@@ -80,13 +110,16 @@ public class WorldCreator {
         TETile[][] world = creator.createWorld();
 
         Plug entrance = creator.createEntrance();
-        Building randomBuilding = creator.randomlyMerge(entrance, 7);
-        entrance.t = Tileset.LOCKED_DOOR;
-        randomBuilding.drawBuilding(world);
-        /*for (int i = 0; i < randomBuilding.getExits().length; i++) {
-            creator.randomlyMerge(randomBuilding.getExits()[i], 7).drawBuilding(world);
-        }*/
-        entrance.drawDot(world);
+        Building[] buildings = creator.allConcrete(entrance, 5, 30);
+
+        for (Building building : buildings) {
+            if (building == null) {
+                break;
+            }
+            building.drawBuilding(world);
+        }
+
+
         /*Hallway hallway = new Hallway(entrance, 5);
         hallway.drawBuilding(world);
         Corner corner = new Corner(hallway.getExits()[0],5, true);
@@ -95,7 +128,8 @@ public class WorldCreator {
         room.drawBuilding(world);
         Hallway hallway1 = new Hallway(room.getExits()[0], 3);
         hallway1.drawBuilding(world);*/
-
+        entrance.t = Tileset.LOCKED_DOOR;
+        entrance.drawDot(world);
         ter.renderFrame(world);
     }
 }
