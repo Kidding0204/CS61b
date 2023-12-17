@@ -30,4 +30,17 @@ public class Corner extends Building{
         pos[1] = walls[3].end;
 
     }
+
+    public static Corner getNewCorner(Plug exit, int length, boolean rotateDirection, Dot[][] world) {
+        Corner r = new Corner(exit, length, rotateDirection, world);
+        if (r.overlapCheck(world) && length < 3) {
+            r.contain = false;
+            return r;
+        }
+        if (!r.overlapCheck(world)) {
+            r.contain = true;
+            return r;
+        }
+        return getNewCorner(exit, length - 1, rotateDirection, world);
+    }
 }

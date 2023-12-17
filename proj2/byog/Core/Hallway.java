@@ -21,4 +21,17 @@ public class Hallway extends Building{
         pos[0] = walls[0].head;
         pos[1] = walls[1].end;
     }
+
+    public static Hallway getNewHallway(Plug exit, int length, Dot[][] world) {
+        Hallway r = new Hallway(exit, length, world);
+        if (r.overlapCheck(world) && length < 2) {
+            r.contain = false;
+            return r;
+        }
+        if (!r.overlapCheck(world)) {
+            r.contain = true;
+            return r;
+        }
+        return getNewHallway(exit, length - 1, world);
+    }
 }

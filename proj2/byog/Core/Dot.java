@@ -23,4 +23,16 @@ public class Dot {
         world[p.x][p.y] = t;
     }
 
+    public boolean containCheck(Dot[][] world) {
+        int width = world.length - 1;
+        int height = world[0].length - 1;
+
+        boolean one = 0 <= p.x & p.x < width;
+        boolean two = 0 <= p.x & p.x < width;
+        boolean three = 0 <= p.y & p.y < height;
+        boolean four = 0 <= p.y & p.y < height;
+        return one & two & three & four;
+    }
+
+
 }

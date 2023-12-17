@@ -39,12 +39,30 @@ public class Room extends Building{
 
         exits = randomPlugs(walls, random, world);
         for (Dot dot : exits) {
+            if (dot == null) {
+                break;
+            }
             dot.t = Tileset.FLOOR;
         }
+    }
+    public static Room getNewRoom(Plug entrance, int width, int length, Random random, Dot[][] world) {
+        Room r = new Room(entrance,width, length, random, world);
+        if (r.overlapCheck(world) && (length < 4 || width < 4)) {
+            r.contain = false;
+            return r;
+        }
+        if (!r.overlapCheck(world)) {
+            r.contain = true;
+            return r;
+        }
+        return getNewRoom(entrance, width - 1, length - 1, random, world);
     }
 
     private static Plug randomPlug(Line currentWall, Random random, Dot[][] world) {
         Dot dot = currentWall.dots[uniform(random, 1, currentWall.length - 1)];
+        if (!dot.containCheck(world)) {
+            return null;
+        }
         boolean[] exitDirection = new boolean[2];
         exitDirection[0] = !currentWall.direction[0];
         if (exitDirection[0]) {
@@ -56,7 +74,7 @@ public class Room extends Building{
     }
 
     private static Plug[] randomPlugs(Line[] walls, Random random, Dot[][] world) {
-        int exitsNum = uniform(random, 0, 4);
+        int exitsNum = uniform(random, 1, 4);
         Plug[] exits = new Plug[exitsNum];
         int previousNum = -1;
 
