@@ -30,71 +30,80 @@ public class WorldCreator {
         int[] direction = {random.nextInt(2), random.nextInt(2)};
         boolean[] randomDirection = {direction[0] == 1, direction[1] == 1};
 
-       return new Plug(new Dot(randomPos, Tileset.LOCKED_DOOR), randomDirection);
+       return new Plug(new Dot(randomPos, Tileset.FLOOR), randomDirection);
     }
 
-    private TETile[][] createWorld() {
-
-        ter.initialize(width, height);
-        TETile[][] world = new TETile[width][height];
+    private Dot[][] initialWorld() {
+        Dot[][] world = new Dot[width][height];
 
         for (int x = 0; x < width; x += 1) {
             for (int y = 0; y < height; y += 1) {
-                world[x][y] = Tileset.NOTHING;
+                world[x][y] = new Dot(new Dot.Position(x, y), Tileset.NOTHING);
             }
         }
 
         return world;
     }
 
-    private Building randomBuilding(Plug entrance, int maxLength) {
-        int choice = random.nextInt(3);
-        int length = uniform(random, 1, maxLength);
+    private TETile[][] createWorld() {
+        ter.initialize(width, height);
+        TETile[][] tiles = new TETile[width][height];
+        for (int x = 0; x < width; x += 1) {
+            for (int y = 0; y < height; y += 1) {
+                tiles[x][y] = Tileset.NOTHING;
+            }
+        }
+        return tiles;
+    }
+
+    private Building randomBuilding(Plug entrance, int maxLength, Dot[][] world) {
+        int length = uniform(random, 3, maxLength);
         boolean rotateDirection = bernoulli(random);
         int width1 = uniform(random, 2, maxLength - 1);
         int width = uniform(random, width1 + 1, maxLength);
-        int width2 = width - width1 + 1;
-        return switch (choice) {
-            case 0 -> new Hallway(entrance, length);
-            case 1 -> new Corner(entrance, length, rotateDirection);
-            case 2 -> new Room(entrance, width, maxLength, random);
-            default -> null;
+        Building returnBuilding = switch (random.nextInt(3)) {
+            case 0 -> new Hallway(entrance, length, world);
+            case 1 -> new Corner(entrance, length, rotateDirection, world);
+            default -> new Room(entrance, width, length, random, world);
         };
+        if (returnBuilding.boundaryExceedingCheck(this.width, this.height)) {
+            returnBuilding.setFields(world);
+            return returnBuilding;
+        } else {
+            return null;
+        }
     }
 
-    private void randomlyMerge(Building[] buildings, int maxLength, int count, int currentCount) {
-        if (count == buildings.length) {
+    private void randomlyMerge(Building[] buildings, int maxLength,int count, int currentCount, Dot[][] world) {
+        Building current = buildings[currentCount];
+        if (current == null || count == 50) {
             return;
         }
 
-        Building current = buildings[currentCount];
-        currentCount += 1;
         int buildingNum = current.exits.length;
         for (int i = 0; i < buildingNum; i++) {
-            buildings[count] = randomBuilding(current.exits[i], maxLength);
+            buildings[count] = randomBuilding(current.exits[i], maxLength, world);
             count++;
             if (count == buildings.length) {
                 break;
             }
         }
 
-        for (int i = 0; i < buildingNum; i++) {
-            randomlyMerge(buildings, maxLength, count, currentCount + i);
-        }
+        randomlyMerge(buildings, maxLength, count, currentCount + 1, world);
     }
-    private Building[] allConcrete(Plug entrance, int maxLength, int maxBuildings) {
-        Building[] buildings = new Building[maxBuildings];
-        Building origination = randomBuilding(entrance, maxLength);
+    private Building[] allConcrete(Plug entrance, Dot[][] world) {
+        Building[] buildings = new Building[50];
+        Building origination = randomBuilding(entrance, 7, world);
         buildings[0] = origination;
 
-        randomlyMerge(buildings, maxLength, 1, 0);
+        randomlyMerge(buildings, 7, 1, 0, world);
         return buildings;
     }
 
     public static TETile[][] create(TERenderer ter, int width, int height, long seed) {
 
         WorldCreator creator = new WorldCreator(ter, width, height, seed);
-
+        Dot[][] dots = creator.initialWorld();
         TETile[][] world = creator.createWorld();
 
         Plug entrance = creator.createEntrance();
@@ -106,28 +115,48 @@ public class WorldCreator {
     public static void main(String[] args) {
         TERenderer ter = new TERenderer();
         WorldCreator creator = new WorldCreator(ter, 100, 60, 123123);
-
+        Dot[][] dots = creator.initialWorld();
         TETile[][] world = creator.createWorld();
 
         Plug entrance = creator.createEntrance();
-        Building[] buildings = creator.allConcrete(entrance, 5, 30);
+        Building[] buildings = creator.allConcrete(entrance, dots);
 
+        /*buildings[0].drawBuilding(world);
+        buildings[1].drawBuilding(world);
+        buildings[2].drawBuilding(world);
+        buildings[3].drawBuilding(world);
+        buildings[4].drawBuilding(world);
+        buildings[5].drawBuilding(world);
+        buildings[6].drawBuilding(world);
+
+         */
         for (Building building : buildings) {
-            if (building == null) {
-                break;
-            }
             building.drawBuilding(world);
         }
 
 
-        /*Hallway hallway = new Hallway(entrance, 5);
+
+
+
+
+
+
+        /*Dot dotTest = new Dot(new Dot.Position(50, 30), Tileset.LOCKED_DOOR);
+        Plug entrance = new Plug(dotTest, new boolean[]{false, false});
+        Hallway hallway = new Hallway(entrance, 5);
         hallway.drawBuilding(world);
-        Corner corner = new Corner(hallway.getExits()[0],5, true);
+        Corner corner = new Corner(hallway.getExits()[0],5, false);
         corner.drawBuilding(world);
-        Room room = new Room(corner.getExits()[0], 4, 6, random);
+        Room room = new Room(corner.getExits()[0], 4, 6, random, dots);
         room.drawBuilding(world);
         Hallway hallway1 = new Hallway(room.getExits()[0], 3);
-        hallway1.drawBuilding(world);*/
+        hallway1.drawBuilding(world);
+        Room room1 = new Room(hallway1.getExits()[0], 4, 6, random, dots);
+        room1.drawBuilding(world);
+
+         */
+
+
         entrance.t = Tileset.LOCKED_DOOR;
         entrance.drawDot(world);
         ter.renderFrame(world);

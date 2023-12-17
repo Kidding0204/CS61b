@@ -5,18 +5,29 @@ import byog.TileEngine.Tileset;
 
 public class Corner extends Building{
 
-    public Corner(Plug exit, int length, boolean rotateDirection) {
+    public Corner(Plug exit, int length, boolean rotateDirection, Dot[][] world) {
 
         floors = new Line[2];
         walls = new Line[4];
         exits = new Plug[1];
-
+        int width = -1;
+        if (rotateDirection) {
+            width = 1;
+        }
         floors[0] = new Line(exit, exit.direction, length);
-        walls[0] = floors[0].getParallelLine(1, length - 1);
-        walls[1] = floors[0].getParallelLine(-1, length + 1);
-        floors[1] = floors[0].getVerticalLine(0, floors[0].length + 1, rotateDirection);
-        walls[2] = walls[0].getVerticalLine(0, walls[0].length, rotateDirection);
-        walls[3] = walls[1].getVerticalLine(0, walls[1].length, rotateDirection);
+        walls[0] = floors[0].getParallelLine(width, length - 1, Tileset.WALL);
+        walls[1] = floors[0].getParallelLine(- width, length + 1, Tileset.WALL);
+        floors[1] = floors[0].getVerticalLine(0, floors[0].length + 1, rotateDirection, Tileset.FLOOR);
+        walls[2] = walls[0].getVerticalLine(0, walls[0].length, rotateDirection, Tileset.WALL);
+        walls[3] = walls[1].getVerticalLine(0, walls[1].length, rotateDirection, Tileset.WALL);
+
         exits[0] = new Plug(floors[1].end, floors[1].direction);
+        for (Dot dot : exits) {
+            dot.t = Tileset.FLOOR;
+        }
+
+        pos[0] = walls[1].end;
+        pos[1] = walls[3].end;
+
     }
 }

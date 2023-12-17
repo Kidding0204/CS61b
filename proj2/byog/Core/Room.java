@@ -7,51 +7,56 @@ import static byog.Core.RandomUtils.uniform;
 
 public class Room extends Building{
 
-    public Room(Plug entrance, int width, int length, Random random) {
+    public Room(Plug entrance, int width, int length, Random random, Dot[][] world) {
         Plug exit = new Plug(entrance, entrance.direction);
         int leftWidth = uniform(random, 1, width - 1);
         int rightWidth = width - leftWidth - 1;
 
         floors = new Line[width - 2];
         floors[0] = new Line(exit, exit.direction, length);
-        Line[] leftFloors = floors[0].getSquare(leftWidth + 1, -1);
-        Line[] rightFloors = floors[0].getSquare(rightWidth + 1, 1);
+        Line[] leftFloors = floors[0].getSquare(leftWidth + 1, -1, world);
+        Line[] rightFloors = floors[0].getSquare(rightWidth + 1, 1, world);
         System.arraycopy(leftFloors, 1, floors, 1, leftFloors.length - 2);
         System.arraycopy(rightFloors, 1, floors, leftFloors.length - 1, rightFloors.length - 2);
 
+        leftFloors[leftWidth].changeT(Tileset.WALL);
+        rightFloors[rightWidth].changeT(Tileset.WALL);
         walls = new Line[5];
         walls[0] = leftFloors[leftWidth];
         walls[1] = rightFloors[rightWidth];
-        walls[2] = walls[0].getVerticalLine(0, width, true);
-        walls[3] = walls[0].getVerticalLine(-length + 1, leftWidth, true);
-        walls[4] = walls[1].getVerticalLine(-length + 1, rightWidth, false);
+        walls[2] = walls[0].getVerticalLine(0, width, true, Tileset.WALL);
+        int width1;
+        if (entrance.direction[1]) {
+            width1 = -length + 1;
+        } else {
+            width1 = length - 1;
+        }
+        walls[3] = walls[0].getVerticalLine(width1, leftWidth, true, Tileset.WALL);
+        walls[4] = walls[1].getVerticalLine(width1, rightWidth, false, Tileset.WALL);
 
-        exits = randomPlugs(exit, walls, random);
+        pos[0] = walls[0].head;
+        pos[1] = walls[1].end;
+
+        exits = randomPlugs(walls, random, world);
+        for (Dot dot : exits) {
+            dot.t = Tileset.FLOOR;
+        }
     }
 
-    private static Plug randomPlug(Plug exit, Line currentWall, Random random, int randomNum) {
+    private static Plug randomPlug(Line currentWall, Random random, Dot[][] world) {
+        Dot dot = currentWall.dots[uniform(random, 1, currentWall.length - 1)];
         boolean[] exitDirection = new boolean[2];
         exitDirection[0] = !currentWall.direction[0];
-        if (randomNum == 2) {
-            exitDirection[1] = exit.direction[1];
-        } else if (randomNum == 1) {
-            if (!exit.direction[0]) {
-                exitDirection[1] = exit.direction[1];
-            } else {
-                exitDirection[1] = !exit.direction[1];
-            }
+        if (exitDirection[0]) {
+            exitDirection[1] = world[dot.p.x ][dot.p.y + 1].t.equals(Tileset.NOTHING);
         } else {
-            if (exit.direction[0]) {
-                exitDirection[1] = !exit.direction[1];
-            } else {
-                exitDirection[1] = exit.direction[1];
-            }
+            exitDirection[1] = world[dot.p.x + 1][dot.p.y].t.equals(Tileset.NOTHING);
         }
-        return new Plug(currentWall.dots[uniform(random, 1, currentWall.length - 1)], exitDirection);
+        return new Plug(dot, exitDirection);
     }
 
-    private static Plug[] randomPlugs(Plug exit, Line[] walls, Random random) {
-        int exitsNum = uniform(random, 0, 3);
+    private static Plug[] randomPlugs(Line[] walls, Random random, Dot[][] world) {
+        int exitsNum = uniform(random, 0, 4);
         Plug[] exits = new Plug[exitsNum];
         int previousNum = -1;
 
@@ -64,7 +69,8 @@ public class Room extends Building{
 
             Line randomWall = walls[randomNum];
             previousNum = randomNum;
-            exits[i] = randomPlug(exit, randomWall, random, randomNum);
+
+            exits[i] = randomPlug(randomWall, random, world);
         }
         return exits;
     }

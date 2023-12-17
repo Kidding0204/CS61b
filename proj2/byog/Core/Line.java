@@ -45,12 +45,11 @@ public class Line {
 
     public void drawLine(TETile[][] world) {
         for (Dot dot : dots) {
-            dot.t = this.t;
             dot.drawDot(world);
         }
     }
 
-    public Line getParallelLine(int width, int newLen) {
+    public Line getParallelLine(int width, int newLen, TETile t) {
         Dot anotherHead = new Dot(new Dot.Position(head.p.x, head.p.y), t);
         if (direction[0]) {
             anotherHead.p.x += width;
@@ -60,7 +59,7 @@ public class Line {
         return new Line (anotherHead, direction, newLen);
     }
 
-    public Line getVerticalLine(int width, int newLen, boolean rotateDirection) {
+    public Line getVerticalLine(int width, int newLen, boolean rotateDirection, TETile t) {
         Dot anotherHead = new Dot(new Dot.Position(end.p.x, end.p.y), t);
         if (direction[0]) {
             anotherHead.p.y += width;
@@ -71,18 +70,25 @@ public class Line {
         return new Line (anotherHead, newDirection, newLen);
     }
 
-    private Line[] getSquare(Line[] lines, int width, int leftOrRight) {
+    private Line[] getSquare(Line[] lines, int width, int leftOrRight, Dot[][] world) {
         if (width == 1) {
             lines[0] = this;
             return lines;
         }
-        getSquare(lines, width - 1, leftOrRight);
-        lines[width - 1] = lines[width - 2].getParallelLine(leftOrRight, length);
+        getSquare(lines, width - 1, leftOrRight, world);
+        lines[width - 1] = lines[width - 2].getParallelLine(leftOrRight, length, Tileset.FLOOR);
         return lines;
     }
 
-    public Line[] getSquare(int width, int leftOrRight) {
-        return getSquare(new Line[width], width, leftOrRight);
+    public Line[] getSquare(int width, int leftOrRight, Dot[][] world) {
+        return getSquare(new Line[width], width, leftOrRight, world);
+    }
+
+    public void changeT(TETile t) {
+        this.t = t;
+        for (Dot dot : dots) {
+            dot.t = t;
+        }
     }
 
     public Plug getExit() {
