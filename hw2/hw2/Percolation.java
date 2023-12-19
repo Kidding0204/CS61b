@@ -30,11 +30,11 @@ public class Percolation {
         List<Integer> openedAdjacentSites = getConnectAdjacent(row, col);
         unionSets(openedAdjacentSites);
     }
-    private void unionSets(List<Integer> sites) {
-        int origin = sites.removeFirst();
-        int size = sites.size();
+    private void unionSets(List<Integer> nodes) {
+        int origin = nodes.removeFirst();
+        int size = nodes.size();
         for (int i = 0; i < size; i++) {
-            int site = sites.removeFirst();
+            int site = nodes.removeFirst();
             if (isFull(site) || isFull(origin)) {
                 sets.union(origin, site);
                 changeWatered(origin);
@@ -106,7 +106,7 @@ public class Percolation {
         boolean r = false;
         for (int i = 0; i < grid; i++) {
             int index = grid * (grid - 1) + i;
-            if(sites[grid - 1][i]) {
+            if (sites[grid - 1][i]) {
                 if (isFull(index)) {
                     r = true;
                     break;
