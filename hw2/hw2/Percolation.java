@@ -20,7 +20,7 @@ public class Percolation {
         sites = new boolean[N][N];
         watered = new boolean[N][N];
         for (int i = 0; i < N; i++) {
-            watered[N - 1][i] = true;
+            watered[0][i] = true;
         }
         openNum = 0;
         sets = new WeightedQuickUnionUF(N * N);
@@ -37,10 +37,12 @@ public class Percolation {
         int size = sites.size();
         for (int i = 0; i < size; i++) {
             int site = sites.removeFirst();
-            if (isFull(site)) {
+            if (isFull(site) || isFull(origin)) {
+                sets.union(origin, site);
                 changeWatered(origin);
+            } else {
+                sets.union(origin, site);
             }
-            sets.union(origin, site);
         }
     }
     private void changeWatered(int index) {
@@ -105,25 +107,14 @@ public class Percolation {
     public boolean percolates() {
         boolean r = false;
         for (int i = 0; i < grid; i++) {
-            if(sites[0][i]) {
-                if (isFull(i)) {
+            int index = grid * (grid - 1) + i;
+            if(sites[grid - 1][i]) {
+                if (isFull(index)) {
                     r = true;
                     break;
                 }
             }
         }
         return r;
-    }
-    public static void main(String[] args) {
-        Percolation test = new Percolation(6);
-        test.open(2,3);
-        test.open(4, 2);
-        test.open(0, 3);
-        test.open(5, 2);
-        test.open(1, 3);
-        test.open(3, 3);
-        boolean p1 = test.percolates();
-        test.open(4, 3);
-        boolean p = test.percolates();
     }
 }
