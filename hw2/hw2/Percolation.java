@@ -31,10 +31,10 @@ public class Percolation {
         unionSets(openedAdjacentSites);
     }
     private void unionSets(List<Integer> nodes) {
-        int origin = nodes.removeFirst();
+        int origin = nodes.remove(0);
         int size = nodes.size();
         for (int i = 0; i < size; i++) {
-            int site = nodes.removeFirst();
+            int site = nodes.remove(0);
             if (isFull(site) || isFull(origin)) {
                 sets.union(origin, site);
                 changeWatered(origin);
