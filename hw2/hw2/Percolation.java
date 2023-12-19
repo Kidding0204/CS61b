@@ -25,6 +25,9 @@ public class Percolation {
     }
 
     public void open(int row, int col) {
+        if (isOpen(row, col)) {
+            return;
+        }
         sites[row][col] = true;
         openNum++;
         List<Integer> openedAdjacentSites = getConnectAdjacent(row, col);
@@ -114,5 +117,8 @@ public class Percolation {
             }
         }
         return r;
+    }
+    public static void main(String[] args) {
+
     }
 }

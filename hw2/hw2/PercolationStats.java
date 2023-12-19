@@ -4,9 +4,9 @@ import edu.princeton.cs.introcs.StdRandom;
 import edu.princeton.cs.introcs.StdStats;
 
 public class PercolationStats {
-    Percolation[] samples;
-    int grid;
-    int num;
+    private final Percolation[] samples;
+    private final int grid;
+    private final int num;
 
     // perform T independent experiments on an N-by-N grid
     public PercolationStats(int N, int T, PercolationFactory pf) {
@@ -21,15 +21,13 @@ public class PercolationStats {
         }
     }
     private double computeThreshold(Percolation sample) {
-        if (sample.percolates()) {
-            return (double) sample.numberOfOpenSites() / (grid * grid);
+        while (!sample.percolates()) {
+            int row = StdRandom.uniform(grid);
+            int column = StdRandom.uniform(grid);
+            sample.open(row, column);
         }
 
-        int row = StdRandom.uniform(grid);
-        int column = StdRandom.uniform(grid);
-        sample.open(row, column);
-
-        return computeThreshold(sample);
+        return (double) sample.numberOfOpenSites() / (grid * grid);
     }
 
     private double[] getThresholds() {
@@ -49,10 +47,10 @@ public class PercolationStats {
     }
     // low endpoint of 95% confidence interval
     public double confidenceLow() {
-        return mean() - 1.96 * Math.sqrt(stddev() / num);
+        return mean() - 1.96 * stddev() * Math.sqrt(num);
     }
     // high endpoint of 95% confidence interval
     public double confidenceHigh() {
-        return mean() + 1.96 * Math.sqrt(stddev() / num);
+        return mean() + 1.96 * stddev() * Math.sqrt(num);
     }
 }
