@@ -10,6 +10,7 @@ public class Percolation {
     private int openNum;
     private final int grid;
     private final WeightedQuickUnionUF sets;
+    private final WeightedQuickUnionUF anotherSets;
     public Percolation(int N) {
         grid = N;
         if (N <= 0) {
@@ -21,6 +22,7 @@ public class Percolation {
             watered[0][i] = true;
         }
         openNum = 0;
+        anotherSets = new WeightedQuickUnionUF(N * N);
         sets = new WeightedQuickUnionUF(N * N + 2);
         for (int i = 0; i < N; i++) {
             sets.union(i, N * N);
@@ -44,14 +46,16 @@ public class Percolation {
             int site = nodes.remove(0);
             if (isFull(site) || isFull(origin)) {
                 sets.union(origin, site);
+                anotherSets.union(origin, site);
                 changeWatered(origin);
             } else {
                 sets.union(origin, site);
+                anotherSets.union(origin, site);
             }
         }
     }
     private void changeWatered(int index) {
-        int rootIndex = sets.find(index);
+        int rootIndex = anotherSets.find(index);
         int rootRow = rootIndex / grid;
         int rootCol = rootIndex % grid;
         watered[rootRow][rootCol] = true;
@@ -95,13 +99,13 @@ public class Percolation {
         return sites[row][col];
     }
     public boolean isFull(int row, int col) {
-        int rootIndex = sets.find(row * grid + col);
+        int rootIndex = anotherSets.find(row * grid + col);
         int rootRow = rootIndex / grid;
         int rootCol = rootIndex % grid;
         return isOpen(row, col) && watered[rootRow][rootCol];
     }
     private boolean isFull(int index) {
-        int rootIndex = sets.find(index);
+        int rootIndex = anotherSets.find(index);
         int rootRow = rootIndex / grid;
         int rootCol = rootIndex % grid;
         return watered[rootRow][rootCol];
