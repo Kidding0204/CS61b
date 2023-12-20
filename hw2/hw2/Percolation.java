@@ -34,6 +34,9 @@ public class Percolation {
         openNum++;
         List<Integer> openedAdjacentSites = getConnectAdjacent(row, col);
         unionSets(openedAdjacentSites);
+        if (isFull(row, col) && row == grid - 1) {
+            percolated = true;
+        }
     }
     private void unionSets(List<Integer> nodes) {
         int origin = nodes.remove(0);
@@ -43,9 +46,6 @@ public class Percolation {
             if (isFull(site) || isFull(origin)) {
                 sets.union(origin, site);
                 changeWatered(origin);
-                if (origin >= grid * (grid - 1) && origin < grid * grid) {
-                    percolated = true;
-                }
             } else {
                 sets.union(origin, site);
             }
@@ -114,6 +114,12 @@ public class Percolation {
         return percolated;
     }
     public static void main(String[] args) {
-
+        Percolation test = new Percolation(5);
+        test.open(0, 0);
+        test.open(1, 0);
+        test.open(2, 0);
+        test.open(3, 0);
+        test.open(4, 0);
+        boolean p = test.percolates();
     }
 }
