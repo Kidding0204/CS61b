@@ -22,9 +22,9 @@ public class Percolation {
         }
         openNum = 0;
         sets = new WeightedQuickUnionUF(N * N + 2);
-        for (int i = 0; i < grid; i++) {
-            sets.union(i, N * N + 1);
-            sets.union(N * (N - 1) + i, N * N + 2);
+        for (int i = 0; i < N; i++) {
+            sets.union(i, N * N);
+            sets.union(N * (N - 1) + i, N * N + 1);
         }
     }
 
@@ -110,7 +110,7 @@ public class Percolation {
         return openNum;
     }
     public boolean percolates() {
-        return sets.connected(grid * grid + 1, grid * grid + 2);
+        return sets.connected(grid * grid, grid * grid + 1);
     }
     public static void main(String[] args) {
 
