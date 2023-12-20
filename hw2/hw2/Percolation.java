@@ -8,7 +8,7 @@ public class Percolation {
     private final boolean[][] sites;
     private final boolean[][] watered;
     private int openNum;
-    private boolean percolated;
+    private List<Integer> bottleSets;
     private final int grid;
     private final WeightedQuickUnionUF sets;
     public Percolation(int N) {
@@ -21,7 +21,7 @@ public class Percolation {
         for (int i = 0; i < N; i++) {
             watered[0][i] = true;
         }
-        percolated = false;
+        bottleSets = new LinkedList<>();
         openNum = 0;
         sets = new WeightedQuickUnionUF(N * N);
     }
@@ -34,15 +34,15 @@ public class Percolation {
         openNum++;
         List<Integer> openedAdjacentSites = getConnectAdjacent(row, col);
         unionSets(openedAdjacentSites);
-        if (isFull(row, col) && row == grid - 1) {
-            percolated = true;
-        }
     }
     private void unionSets(List<Integer> nodes) {
         int origin = nodes.remove(0);
         int size = nodes.size();
         for (int i = 0; i < size; i++) {
             int site = nodes.remove(0);
+            if (site >= grid * (grid - 1)) {
+                bottleSets.add(site);
+            }
             if (isFull(site) || isFull(origin)) {
                 sets.union(origin, site);
                 changeWatered(origin);
@@ -111,15 +111,14 @@ public class Percolation {
         return openNum;
     }
     public boolean percolates() {
-        return percolated;
+        for (Integer bottleSet : bottleSets) {
+            if (isFull(bottleSet)) {
+                return true;
+            }
+        }
+        return false;
     }
     public static void main(String[] args) {
-        Percolation test = new Percolation(5);
-        test.open(0, 0);
-        test.open(1, 0);
-        test.open(2, 0);
-        test.open(3, 0);
-        test.open(4, 0);
-        boolean p = test.percolates();
+
     }
 }
