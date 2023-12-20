@@ -10,6 +10,7 @@ public class Percolation {
     private int openNum;
     private final int grid;
     private final WeightedQuickUnionUF sets;
+    private final WeightedQuickUnionUF aSets;
     public Percolation(int N) {
         grid = N;
         if (N <= 0) {
@@ -22,6 +23,11 @@ public class Percolation {
         }
         openNum = 0;
         sets = new WeightedQuickUnionUF(N * N);
+        aSets = new WeightedQuickUnionUF(N * N + 2);
+        for (int i = 0; i < N; i++) {
+            aSets.union(i, N * N);
+            aSets.union(N * (N - 1) + i, N * N + 1);
+        }
     }
 
     public void open(int row, int col) {
@@ -40,9 +46,11 @@ public class Percolation {
             int site = nodes.remove(0);
             if (isFull(site) || isFull(origin)) {
                 sets.union(origin, site);
+                aSets.union(origin, site);
                 changeWatered(origin);
             } else {
                 sets.union(origin, site);
+                aSets.union(origin, site);
             }
         }
     }
@@ -106,17 +114,7 @@ public class Percolation {
         return openNum;
     }
     public boolean percolates() {
-        boolean r = false;
-        for (int i = 0; i < grid; i++) {
-            int index = grid * (grid - 1) + i;
-            if (sites[grid - 1][i]) {
-                if (isFull(index)) {
-                    r = true;
-                    break;
-                }
-            }
-        }
-        return r;
+        return aSets.connected(grid * grid, grid * grid + 1);
     }
     public static void main(String[] args) {
 
