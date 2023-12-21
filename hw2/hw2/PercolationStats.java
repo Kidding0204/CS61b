@@ -21,13 +21,14 @@ public class PercolationStats {
         }
     }
     private double computeThreshold(Percolation sample) {
-        while (!sample.percolates()) {
-            int row = StdRandom.uniform(grid);
-            int column = StdRandom.uniform(grid);
-            sample.open(row, column);
+        if (sample.percolates()) {
+            return (double) sample.numberOfOpenSites() / (grid * grid);
         }
 
-        return (double) sample.numberOfOpenSites() / (grid * grid);
+        int row = StdRandom.uniform(grid);
+        int column = StdRandom.uniform(grid);
+        sample.open(row, column);
+        return computeThreshold(sample);
     }
 
     private double[] getThresholds() {
