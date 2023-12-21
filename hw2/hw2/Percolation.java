@@ -114,6 +114,9 @@ public class Percolation {
         return openNum;
     }
     public boolean percolates() {
+        if (grid == 1) {
+            return isOpen(0, 0);
+        }
         return aSets.connected(grid * grid, grid * grid + 1);
     }
     public static void main(String[] args) {
