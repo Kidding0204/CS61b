@@ -115,6 +115,17 @@ public class TestBSTMap {
         b.put("duo", 3);
         Integer x = b.remove("REal", 2);
     }
+    @Test
+    public void iteratorTest() {
+        BSTMap<String, Integer> b = new BSTMap<>();
+        b.put("hi", 0);
+        b.put("REal", 1);
+        b.put("duo", 3);
+        b.put("Osaka", 5);
+        for (String key : b) {
+            System.out.println(key);
+        }
+    }
 
     public static void main(String[] args) {
         jh61b.junit.TestRunner.runTests(TestBSTMap.class);
