@@ -57,11 +57,33 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         return buckets[hash(key)].get(key);
     }
 
+    private void resize() {
+        Set<K> keySet = keySet();
+        ArrayMap<K, V>[] oldBuckets = buckets;
+
+        int[] oldHash = new int[size];
+        int i = 0;
+        for (K key : keySet) {
+            oldHash[i] = hash(key);
+            i++;
+        }
+
+        buckets = new ArrayMap[buckets.length * 2];
+        i = 0;
+        for (K key : keySet) {
+            put(key, oldBuckets[oldHash[i]].remove(key));
+            i++;
+        }
+    }
+
     /* Associates the specified value with the specified key in this map. */
     @Override
     public void put(K key, V value) {
         if (get(key) == null) {
             size++;
+            if (loadFactor() > MAX_LF) {
+                resize();
+            }
         }
         buckets[hash(key)].put(key, value);
     }
