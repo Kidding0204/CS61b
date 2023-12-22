@@ -5,7 +5,7 @@ import java.util.Set;
  * declaration, though you can use other formal type parameters if you'd like.
  */
 public interface Map61B<K, V> extends Iterable<K> {
-    /** Removes all of the mappings from this map. */
+    /** Removes all the mappings from this map. */
     void clear();
 
     /* Returns the value to which the specified key is mapped, or null if this
