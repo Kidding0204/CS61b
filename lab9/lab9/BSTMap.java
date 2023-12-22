@@ -19,6 +19,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         /* Children of this Node. */
         private Node left;
         private Node right;
+        private Node parent;
 
         private Node(K k, V v) {
             key = k;
@@ -84,8 +85,10 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         int cmp = key.compareTo(p.key);
         if (cmp < 0) {
             p.left =  putHelper(key, value, p.left);
+            p.left.parent = p;
         } else if (cmp > 0) {
             p.right =  putHelper(key, value, p.right);
+            p.right.parent = p;
         } else {
             p.value = value;
         }
@@ -132,31 +135,29 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return r;
     }
 
-    private Node findParentNode(K key, Node p) {
+    private Node findNode(K key, Node p) {
         if (key == null) {
             throw new IllegalArgumentException("calls findNode() with a null key");
         }
         if (p == null) {
             return null;
         }
-        if (key.equals(p.left.key) || key.equals(p.right.key)) {
-            return p;
-        }
+
 
         int cmp = key.compareTo(p.key);
         if (cmp > 0) {
-            return findParentNode(key, p.right);
+            return findNode(key, p.right);
         } else if (cmp < 0) {
-            return findParentNode(key, p.left);
+            return findNode(key, p.left);
         }
 
-        return null;
+        return p;
     }
     private Node findRightSubstitute(Node p) {
-        if (p.left == null) {
+        if (p == null) {
             return null;
         }
-        if (p.left.left == null) {
+        if (p.left == null) {
             return p;
         }
         return findRightSubstitute(p.left);
@@ -168,23 +169,16 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         if (p.right == null) {
             return p;
         }
-        return findRightSubstitute(p.right);
+        return findLeftSubstitute(p.right);
     }
 
     private V removeHelper(K key) {
-        Node keyPNode = findParentNode(key, root);
-        if (keyPNode == null) {
+        Node keyNode = findNode(key, root);
+        if (keyNode == null) {
             return null;
         }
-        boolean leftOrRight;
-        leftOrRight = key.equals(keyPNode.left.key);
-        Node keyNode;
-        if (leftOrRight) {
-            keyNode = keyPNode.left;
-        } else {
-            keyNode = keyPNode.right;
-        }
 
+        V r = keyNode.value;
         Node leftSubstitute = findLeftSubstitute(keyNode.left);
         Node rightSubstitute = findRightSubstitute(keyNode.right);
         if (leftSubstitute != null) {
@@ -193,8 +187,32 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             if (leftSubstitute.right != null) {
                 leftSubstitute.key = leftSubstitute.right.key;
                 leftSubstitute.value = leftSubstitute.right.value;
+                leftSubstitute.right = null;
+            } else {
+                leftSubstitute.parent.right = null;
+            }
+            return r;
+        } else if (rightSubstitute != null) {
+            keyNode.key = rightSubstitute.key;
+            keyNode.value = rightSubstitute.value;
+            if (rightSubstitute.left != null) {
+                rightSubstitute.key = rightSubstitute.left.key;
+                rightSubstitute.value = rightSubstitute.left.value;
+                rightSubstitute.left = null;
+            } else {
+                rightSubstitute.parent.left = null;
+            }
+            return r;
+        } else {
+            Node keyParent = keyNode.parent;
+            if (keyParent.right.equals(keyNode)) {
+                keyParent.right = null;
+            } else {
+                keyParent.left = null;
             }
         }
+
+        return r;
     }
 
     /** Removes KEY from the tree if present
