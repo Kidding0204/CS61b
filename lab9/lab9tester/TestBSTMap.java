@@ -99,6 +99,22 @@ public class TestBSTMap {
             System.out.println(key);
         }
     }
+    @Test
+    public void removeTest() {
+        BSTMap<String, Integer> b = new BSTMap<>();
+        b.put("hi", 0);
+        b.put("REal", 1);
+        b.put("duo", 3);
+        assertEquals(3, (int) b.remove("duo"));
+    }
+    @Test
+    public void removeConsistentlyTest() {
+        BSTMap<String, Integer> b = new BSTMap<>();
+        b.put("hi", 0);
+        b.put("REal", 1);
+        b.put("duo", 3);
+        Integer x = b.remove("REal", 2);
+    }
 
     public static void main(String[] args) {
         jh61b.junit.TestRunner.runTests(TestBSTMap.class);

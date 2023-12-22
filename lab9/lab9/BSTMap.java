@@ -172,44 +172,53 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return findLeftSubstitute(p.right);
     }
 
-    private V removeHelper(K key) {
+    private V removeHelper(K key, V value, boolean consistent) {
         Node keyNode = findNode(key, root);
         if (keyNode == null) {
             return null;
         }
 
+        boolean removal = true;
         V r = keyNode.value;
-        Node leftSubstitute = findLeftSubstitute(keyNode.left);
-        Node rightSubstitute = findRightSubstitute(keyNode.right);
-        if (leftSubstitute != null) {
-            keyNode.key = leftSubstitute.key;
-            keyNode.value = leftSubstitute.value;
-            if (leftSubstitute.right != null) {
-                leftSubstitute.key = leftSubstitute.right.key;
-                leftSubstitute.value = leftSubstitute.right.value;
-                leftSubstitute.right = null;
+        if (consistent) {
+            removal = value.equals(r);
+        }
+        if (removal) {
+            size--;
+            Node leftSubstitute = findLeftSubstitute(keyNode.left);
+            Node rightSubstitute = findRightSubstitute(keyNode.right);
+            if (leftSubstitute != null) {
+                keyNode.key = leftSubstitute.key;
+                keyNode.value = leftSubstitute.value;
+                if (leftSubstitute.right != null) {
+                    leftSubstitute.key = leftSubstitute.right.key;
+                    leftSubstitute.value = leftSubstitute.right.value;
+                    leftSubstitute.right = null;
+                } else {
+                    leftSubstitute.parent.right = null;
+                }
+                return r;
+            } else if (rightSubstitute != null) {
+                keyNode.key = rightSubstitute.key;
+                keyNode.value = rightSubstitute.value;
+                if (rightSubstitute.left != null) {
+                    rightSubstitute.key = rightSubstitute.left.key;
+                    rightSubstitute.value = rightSubstitute.left.value;
+                    rightSubstitute.left = null;
+                } else {
+                    rightSubstitute.parent.left = null;
+                }
+                return r;
             } else {
-                leftSubstitute.parent.right = null;
+                Node keyParent = keyNode.parent;
+                if (keyParent.right.equals(keyNode)) {
+                    keyParent.right = null;
+                } else {
+                    keyParent.left = null;
+                }
             }
-            return r;
-        } else if (rightSubstitute != null) {
-            keyNode.key = rightSubstitute.key;
-            keyNode.value = rightSubstitute.value;
-            if (rightSubstitute.left != null) {
-                rightSubstitute.key = rightSubstitute.left.key;
-                rightSubstitute.value = rightSubstitute.left.value;
-                rightSubstitute.left = null;
-            } else {
-                rightSubstitute.parent.left = null;
-            }
-            return r;
         } else {
-            Node keyParent = keyNode.parent;
-            if (keyParent.right.equals(keyNode)) {
-                keyParent.right = null;
-            } else {
-                keyParent.left = null;
-            }
+            return null;
         }
 
         return r;
@@ -226,7 +235,8 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             root = null;
             return r;
         }
-        return removeHelper(key);
+
+        return removeHelper(key, null, false);
     }
 
     /** Removes the key-value entry for the specified key only if it is
@@ -235,11 +245,31 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
      **/
     @Override
     public V remove(K key, V value) {
-        throw new UnsupportedOperationException();
+        if (key.equals(root.key)) {
+            if (value.equals(root.value)) {
+                V r = root.value;
+                root = null;
+                return r;
+            } else {
+                return null;
+            }
+        }
+
+        return removeHelper(key, value, true);
     }
 
     @Override
     public Iterator<K> iterator() {
-        throw new UnsupportedOperationException();
+        return new Iterator<K>() {
+            @Override
+            public boolean hasNext() {
+                if ()
+            }
+
+            @Override
+            public K next() {
+                return null;
+            }
+        }
     }
 }
