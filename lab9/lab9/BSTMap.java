@@ -135,33 +135,6 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return r;
     }
 
-    private Node findNode(K key, Node p) {
-        if (key == null) {
-            throw new IllegalArgumentException("calls findNode() with a null key");
-        }
-        if (p == null) {
-            return null;
-        }
-
-
-        int cmp = key.compareTo(p.key);
-        if (cmp > 0) {
-            return findNode(key, p.right);
-        } else if (cmp < 0) {
-            return findNode(key, p.left);
-        }
-
-        return p;
-    }
-    private Node findRightSubstitute(Node p) {
-        if (p == null) {
-            return null;
-        }
-        if (p.left == null) {
-            return p;
-        }
-        return findRightSubstitute(p.left);
-    }
     private Node findLeftSubstitute(Node p) {
         if (p == null) {
             return null;
@@ -172,66 +145,32 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return findLeftSubstitute(p.right);
     }
 
-    private V removeHelper(K key, V value, boolean consistent) {
-        Node keyNode = findNode(key, root);
-        if (keyNode == null) {
+    private Node removeHelper(K key, Node p) {
+        if (p == null) {
             return null;
         }
 
-        boolean removal = true;
-        V r = keyNode.value;
-        if (consistent) {
-            removal = value.equals(r);
-        }
-        if (removal) {
-            size--;
-            Node leftSubstitute = findLeftSubstitute(keyNode.left);
-            Node rightSubstitute = findRightSubstitute(keyNode.right);
-            if (leftSubstitute != null) {
-                keyNode.key = leftSubstitute.key;
-                keyNode.value = leftSubstitute.value;
-                if (leftSubstitute.left != null) {
-                    leftSubstitute.key = leftSubstitute.left.key;
-                    leftSubstitute.value = leftSubstitute.left.value;
-                    leftSubstitute.left = null;
-                } else {
-                    if (rightSubstitute.equals(keyNode.left)) {
-                        rightSubstitute.parent.left = null;
-                    }
-                    leftSubstitute.parent.right = null;
-                }
-                return r;
-            } else if (rightSubstitute != null) {
-                keyNode.key = rightSubstitute.key;
-                keyNode.value = rightSubstitute.value;
-                if (rightSubstitute.right != null) {
-                    rightSubstitute.key = rightSubstitute.right.key;
-                    rightSubstitute.value = rightSubstitute.right.value;
-                    rightSubstitute.right = null;
-                } else {
-                    if (rightSubstitute.equals(keyNode.right)) {
-                        rightSubstitute.parent.right = null;
-                    }
-                    rightSubstitute.parent.left = null;
-                }
-                return r;
-            } else {
-                Node keyParent = keyNode.parent;
-                if (keyParent == null) {
-                    root = null;
-                    return r;
-                }
-                if (keyParent.right.equals(keyNode)) {
-                    keyParent.right = null;
-                } else {
-                    keyParent.left = null;
-                }
-            }
+        int cmp = key.compareTo(p.key);
+        if (cmp < 0) {
+            p.left = removeHelper(key, p.left);
+        } else if (cmp > 0) {
+            p.right = removeHelper(key, p.right);
         } else {
-            return null;
+            // Node to be removed found
+            if (p.left == null) {
+                return p.right; // If only left child or no child
+            } else if (p.right == null) {
+                return p.left; // If only right child
+            } else {
+                // Node to be removed has both left and right children
+                Node successor = findLeftSubstitute(p.right); // or findRightSubstitute(p.left)
+                p.key = successor.key;
+                p.value = successor.value;
+                p.right = removeHelper(successor.key, p.right);
+            }
         }
 
-        return r;
+        return p;
     }
 
     /** Removes KEY from the tree if present
@@ -240,7 +179,13 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
      */
     @Override
     public V remove(K key) {
-        return removeHelper(key, null, false);
+        Node removedNode = removeHelper(key, root);
+        if (removedNode != null) {
+            size--;
+            root = removedNode;
+            return removedNode.value;
+        }
+        return null;
     }
 
     /** Removes the key-value entry for the specified key only if it is
@@ -249,7 +194,16 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
      **/
     @Override
     public V remove(K key, V value) {
-        return removeHelper(key, value, true);
+        Node removedNode = removeHelper(key, root);
+        if (removedNode != null) {
+            if (removedNode.value.equals(value)) {
+                return null;
+            }
+            size--;
+            root = removedNode;
+            return removedNode.value;
+        }
+        return null;
     }
 
     @Override
