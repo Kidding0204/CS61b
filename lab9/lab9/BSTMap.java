@@ -96,7 +96,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return p;
     }
 
-    /** Inserts the key KEY
+    /** Inserts the key
      *  If it is already present, updates value to be VALUE.
      */
     @Override
