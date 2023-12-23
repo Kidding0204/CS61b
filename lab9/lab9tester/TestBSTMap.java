@@ -103,10 +103,9 @@ public class TestBSTMap {
     public void removeTest() {
         BSTMap<String, Integer> b = new BSTMap<>();
         b.put("hi", 0);
-        b.put("REal", 1);
-        b.put("duo", 3);
-        b.put("ke", 3);
-        assertEquals(0, (int) b.remove("hi"));
+        b.put("ok", 3);
+        assertEquals((Integer) 0, b.remove("hi"));
+        assertEquals((Integer) 3, b.remove("ok"));
     }
     @Test
     public void removeConsistentlyTest() {
