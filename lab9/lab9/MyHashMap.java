@@ -69,6 +69,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         }
 
         buckets = new ArrayMap[buckets.length * 2];
+        this.clear();
         i = 0;
         for (K key : keySet) {
             put(key, oldBuckets[oldHash[i]].remove(key));
@@ -81,11 +82,13 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     public void put(K key, V value) {
         if (get(key) == null) {
             size++;
+            buckets[hash(key)].put(key, value);
             if (loadFactor() > MAX_LF) {
                 resize();
             }
+        } else {
+            buckets[hash(key)].put(key, value);
         }
-        buckets[hash(key)].put(key, value);
     }
 
     /* Returns the number of key-value mappings in this map. */
