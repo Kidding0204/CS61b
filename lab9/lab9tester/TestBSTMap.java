@@ -105,7 +105,8 @@ public class TestBSTMap {
         b.put("hi", 0);
         b.put("REal", 1);
         b.put("duo", 3);
-        assertEquals(3, (int) b.remove("duo"));
+        b.put("ke", 3);
+        assertEquals(0, (int) b.remove("hi"));
     }
     @Test
     public void removeConsistentlyTest() {

@@ -190,10 +190,10 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             if (leftSubstitute != null) {
                 keyNode.key = leftSubstitute.key;
                 keyNode.value = leftSubstitute.value;
-                if (leftSubstitute.right != null) {
-                    leftSubstitute.key = leftSubstitute.right.key;
-                    leftSubstitute.value = leftSubstitute.right.value;
-                    leftSubstitute.right = null;
+                if (leftSubstitute.left != null) {
+                    leftSubstitute.key = leftSubstitute.left.key;
+                    leftSubstitute.value = leftSubstitute.left.value;
+                    leftSubstitute.left = null;
                 } else {
                     leftSubstitute.parent.right = null;
                 }
@@ -201,16 +201,20 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             } else if (rightSubstitute != null) {
                 keyNode.key = rightSubstitute.key;
                 keyNode.value = rightSubstitute.value;
-                if (rightSubstitute.left != null) {
-                    rightSubstitute.key = rightSubstitute.left.key;
-                    rightSubstitute.value = rightSubstitute.left.value;
-                    rightSubstitute.left = null;
+                if (rightSubstitute.right != null) {
+                    rightSubstitute.key = rightSubstitute.right.key;
+                    rightSubstitute.value = rightSubstitute.right.value;
+                    rightSubstitute.right = null;
                 } else {
                     rightSubstitute.parent.left = null;
                 }
                 return r;
             } else {
                 Node keyParent = keyNode.parent;
+                if (keyParent == null) {
+                    root = null;
+                    return r;
+                }
                 if (keyParent.right.equals(keyNode)) {
                     keyParent.right = null;
                 } else {
@@ -230,12 +234,6 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
      */
     @Override
     public V remove(K key) {
-        if (key == root.key) {
-            V r = root.value;
-            root = null;
-            return r;
-        }
-
         return removeHelper(key, null, false);
     }
 
@@ -245,16 +243,6 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
      **/
     @Override
     public V remove(K key, V value) {
-        if (key.equals(root.key)) {
-            if (value.equals(root.value)) {
-                V r = root.value;
-                root = null;
-                return r;
-            } else {
-                return null;
-            }
-        }
-
         return removeHelper(key, value, true);
     }
 
