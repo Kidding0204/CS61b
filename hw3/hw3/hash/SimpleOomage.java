@@ -39,7 +39,7 @@ public class SimpleOomage implements Oomage {
             int r = random.nextInt();
             int g = random.nextInt();
             int b = random.nextInt();
-            return red * r + green * g + blue * b;
+            return red * r / 5 + green * g / 5 + blue * b / 5;
         }
     }
 
