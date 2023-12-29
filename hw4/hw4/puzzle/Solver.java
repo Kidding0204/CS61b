@@ -34,17 +34,17 @@ public class Solver {
     }
 
     public int moves() {
-        BestFirstSearch();
+        bestFirstSearch();
         return goal.moves;
     }
     public Iterable<WorldState> solution() {
-        BestFirstSearch();
+        bestFirstSearch();
         List<WorldState> queue = new LinkedList<>();
         getQueue(queue, goal);
         return queue;
     }
 
-    private void BestFirstSearch() {
+    private void bestFirstSearch() {
         if (goal != null) {
             return;
         }
@@ -69,11 +69,11 @@ public class Solver {
             fringe.insert(neighborNode);
         }
     }
-    private void getQueue(List<WorldState> queue, Node goal) {
-        if (goal == null) {
+    private void getQueue(List<WorldState> queue, Node g) {
+        if (g == null) {
             return;
         }
-        getQueue(queue, goal.pre);
-        queue.add(goal.state);
+        getQueue(queue, g.pre);
+        queue.add(g.state);
     }
 }

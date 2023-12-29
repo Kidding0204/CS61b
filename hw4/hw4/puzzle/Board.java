@@ -2,7 +2,9 @@ package hw4.puzzle;
 
 import edu.princeton.cs.algs4.Queue;
 
-public class Board implements WorldState{
+import java.util.Random;
+
+public class Board implements WorldState {
     private static final int BLANK = 0;
     private final int[][] tiles;
     private final int size;
@@ -63,7 +65,7 @@ public class Board implements WorldState{
 
     public int tileAt(int i, int j) {
         if (i < 0 || i >= size || j < 0 || j > size) {
-            throw new IllegalArgumentException("Array Bound Exception");
+            return -1;
         }
         return tiles[i][j];
     }
@@ -103,6 +105,19 @@ public class Board implements WorldState{
         return sum;
     }
     @Override
+    public int hashCode() {
+        Random r = new Random(0);
+        int hashCode = 0;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                int curr = tiles[i][j];
+                int fraction = r.nextInt();
+                hashCode = fraction * (curr + i + j);
+            }
+        }
+        return hashCode;
+    }
+    @Override
     public boolean equals(Object y) {
         if (y == null) {
             return false;
@@ -136,7 +151,7 @@ public class Board implements WorldState{
         s.append(N).append("\n");
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                s.append(String.format("%2d ", tileAt(i,j)));
+                s.append(String.format("%2d ", tileAt(i, j)));
             }
             s.append("\n");
         }
