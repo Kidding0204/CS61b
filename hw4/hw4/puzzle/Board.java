@@ -65,7 +65,7 @@ public class Board implements WorldState {
 
     public int tileAt(int i, int j) {
         if (i < 0 || i >= size || j < 0 || j > size) {
-            return -1;
+            throw new IndexOutOfBoundsException();
         }
         return tiles[i][j];
     }
@@ -128,8 +128,10 @@ public class Board implements WorldState {
         if (y.getClass() != this.getClass()) {
             return false;
         }
-
         Board o = (Board) y;
+        if (o.size != this.size) {
+            return false;
+        }
         boolean equal = true;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
