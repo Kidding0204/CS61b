@@ -16,7 +16,10 @@ public class Board implements WorldState{
     }
     public Board(int[][] tiles) {
         size = tiles.length;
-        this.tiles = tiles;
+        this.tiles = new int[size][size];
+        for (int i = 0; i < size; i++) {
+            System.arraycopy(tiles[i], 0, this.tiles[i], 0, size);
+        }
     }
 
     @Override
@@ -92,7 +95,9 @@ public class Board implements WorldState{
                     continue;
                 }
                 Pos correct = correctPos(tile);
-                sum += Math.abs(i - correct.x) + Math.abs(j - correct.y);
+                int xCorrect = correct.x;
+                int yCorrect = correct.y;
+                sum += Math.abs(i - xCorrect) + Math.abs(j - yCorrect);
             }
         }
         return sum;
@@ -140,17 +145,11 @@ public class Board implements WorldState{
     }
     private Pos correctPos(int n) {
         int xCorrect = n / size;
-        int yCorrect = n % size;
+        int yCorrect = n % size - 1;
+        if (yCorrect == -1) {
+            xCorrect--;
+            yCorrect = size - 1;
+        }
         return new Pos(xCorrect, yCorrect);
-    }
-    public static void main(String[] args) {
-        int[][] tiles = {
-                {1, 2, 3},
-                {4, 5, 6},
-                {7, 8, 9}
-        };
-        Board t = new Board(tiles);
-        String test = t.toString();
-        System.out.println(test);
     }
 }
