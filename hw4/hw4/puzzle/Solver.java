@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Solver {
+    private Node goal;
     private final MinPQ<Node> fringe;
     private static class Node implements Comparable<Node> {
         WorldState state;
@@ -33,23 +34,30 @@ public class Solver {
     }
 
     public int moves() {
-        return BestFirstSearch().moves;
+        BestFirstSearch();
+        return goal.moves;
     }
     public Iterable<WorldState> solution() {
-        Node goal = BestFirstSearch();
+        BestFirstSearch();
         List<WorldState> queue = new LinkedList<>();
         getQueue(queue, goal);
         return queue;
     }
 
-    private Node BestFirstSearch() {
-        Node checkingNode = fringe.delMin();
-        while (!checkingNode.state.isGoal()) {
-            checkingNode = visit(checkingNode);
+    private void BestFirstSearch() {
+        if (goal != null) {
+            return;
         }
-        return checkingNode;
+        while (!fringe.isEmpty()) {
+            Node checkingNode = fringe.delMin();
+            if (checkingNode.state.isGoal()) {
+                goal = checkingNode;
+                break;
+            }
+            visit(checkingNode);
+        }
     }
-    private Node visit(Node curr) {
+    private void visit(Node curr) {
         for (WorldState neighbor : curr.state.neighbors()) {
             if (neighbor.equals(curr.state)) {
                 continue;
@@ -58,14 +66,12 @@ public class Solver {
             Node neighborNode = new Node(neighbor, curr, neighborMoves);
             fringe.insert(neighborNode);
         }
-
-        return fringe.delMin();
     }
-    private Node getQueue(List<WorldState> queue, Node goal) {
-        if (goal.pre == null) {
-            return goal;
+    private void getQueue(List<WorldState> queue, Node goal) {
+        if (goal == null) {
+            return;
         }
-        queue.add(getQueue(queue, goal.pre).state);
-        return goal;
+        getQueue(queue, goal.pre);
+        queue.add(goal.state);
     }
 }
