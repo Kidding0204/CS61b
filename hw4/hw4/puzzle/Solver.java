@@ -59,8 +59,10 @@ public class Solver {
     }
     private void visit(Node curr) {
         for (WorldState neighbor : curr.state.neighbors()) {
-            if (neighbor.equals(curr.state)) {
-                continue;
+            if (curr.pre != null) {
+                if (neighbor.equals(curr.pre.state)) {
+                    continue;
+                }
             }
             int neighborMoves = curr.moves + 1;
             Node neighborNode = new Node(neighbor, curr, neighborMoves);
