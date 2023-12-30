@@ -72,7 +72,7 @@ public class MergeSort {
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
         if (items.isEmpty()) {
-            return null;
+            return items;
         }
         Queue<Queue<Item>> queues = makeSingleItemQueues(items);
         int size = queues.size();
