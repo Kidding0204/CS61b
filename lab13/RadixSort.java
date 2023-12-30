@@ -44,15 +44,19 @@ public class RadixSort {
      */
     private static void sortHelperLSD(String[] asciis, int index) {
         // Optional LSD helper method for required LSD radix sort
-        int[] counts = new int[256];
+        int[] counts = new int[257];
         assignCounts(counts, asciis, index);
         int[] ends = endIndices(counts);
-        LSDSort(asciis, ends, index);
+        asciis = LSDSort(asciis, ends, index);
     }
     private static void assignCounts(int[] counts, String[] asciis, int index) {
         for (String curr : asciis) {
+            if (curr.length() - 1 < index) {
+                counts[0] += 1;
+                continue;
+            }
             char checking = curr.charAt(index);
-            counts[checking] += 1;
+            counts[checking + 1] += 1;
         }
     }
     private static int[] endIndices(int[] counts) {
@@ -63,15 +67,22 @@ public class RadixSort {
         }
         return ends;
     }
-    private static void LSDSort(String[] asciis, int[] ends, int index) {
+    private static String[] LSDSort(String[] asciis, int[] ends, int index) {
         String[] sorted = new String[asciis.length];
-        for (String ascii : asciis) {
-            int idxOfEnds = ascii.charAt(index);
+        for (int i = asciis.length - 1; i > -1; i--) {
+            String ascii = asciis[i];
+            int idxOfEnds = 0;
+            if (ascii.length() - 1 >= index) {
+                idxOfEnds = ascii.charAt(index) + 1;
+            }
+            if (idxOfEnds != 0 && ends[idxOfEnds] == ends[idxOfEnds - 1]) {
+                continue;
+            }
             ends[idxOfEnds]--;
             int idxOfSorted = ends[idxOfEnds];
             sorted[idxOfSorted] = ascii;
         }
-        asciis = sorted;
+        return sorted;
     }
 
     /**
