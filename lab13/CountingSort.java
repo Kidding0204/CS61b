@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 /**
  * Class with 2 ways of doing Counting sort, one naive way and one "better" way
  *
@@ -67,6 +69,51 @@ public class CountingSort {
      */
     public static int[] betterCountingSort(int[] arr) {
         // TODO make counting sort work with arrays containing negative numbers.
-        return null;
+        int[] lenAndPosMin = findCountLenAndMin(arr);
+        int len = lenAndPosMin[0];
+        int negMin = lenAndPosMin[1];
+        int[] counts = new int[len];
+        assignCounts(counts, arr, negMin);
+
+        return countingSort(counts, arr.length);
+    }
+    private static int[] findCountLenAndMin(int[] arr) {
+        int posMax = 0;
+        int negMin = 0;
+        for (int num : arr) {
+            if (num > 0) {
+                posMax = Math.max(posMax, num);
+            } else if (num < 0) {
+                negMin = Math.min(negMin, num);
+            }
+        }
+        int len = posMax - negMin + 1;
+        return new int[]{len, negMin};
+    }
+    private static void assignCounts(int[] counts, int[] arr, int negMin) {
+        for (int num : arr) {
+            int index = num - negMin;
+            counts[index] += 1;
+        }
+    }
+    private static int[] countingSort(int[] counts, int arrLen) {
+        int[] sortedArr = new int[arrLen];
+        int j = 0;
+        for (int i = 0; i < counts.length; i++) {
+            int count = counts[i];
+            while(count != 0) {
+                sortedArr[j] = i;
+                j++;
+                count--;
+            }
+        }
+        return sortedArr;
+    }
+
+    public static void main(String[] args) {
+        int[] test = {9, 8, 7 ,4 ,5 ,6, 2};
+        int[] sortedTest = betterCountingSort(test);
+        System.out.println(Arrays.toString(test));
+        System.out.println(Arrays.toString(sortedTest));
     }
 }
