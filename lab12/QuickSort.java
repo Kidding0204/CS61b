@@ -47,13 +47,45 @@ public class QuickSort {
     private static <Item extends Comparable> void partition(
             Queue<Item> unsorted, Item pivot,
             Queue<Item> less, Queue<Item> equal, Queue<Item> greater) {
-        // Your code here!
+        for (Item item : unsorted) {
+            int cmp = item.compareTo(pivot);
+            if (cmp < 0) {
+                less.enqueue(item);
+            } else if (cmp > 0) {
+                greater.enqueue(item);
+            } else {
+                equal.enqueue(item);
+            }
+        }
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> quickSort(
             Queue<Item> items) {
-        // Your code here!
-        return items;
+        if (items.size() <= 1) {
+            return items;
+        }
+
+        Queue<Item> left = new Queue<>();
+        Queue<Item> middle = new Queue<>();
+        Queue<Item> right = new Queue<>();
+        partition(items, getRandomItem(items),
+                 left, middle, right);
+
+        left = quickSort(left);
+        right = quickSort(right);
+        Queue<Item> lessOrEqual = catenate(left, middle);
+
+        return catenate(lessOrEqual, right);
+    }
+
+    public static void main(String[] args) {
+        Queue<String> students = new Queue<>();
+        students.enqueue("Alice");
+        students.enqueue("Vanessa");
+        students.enqueue("Ethan");
+        Queue<String> sortedStudents = QuickSort.quickSort(students);
+        System.out.println(students);
+        System.out.println(sortedStudents);
     }
 }
