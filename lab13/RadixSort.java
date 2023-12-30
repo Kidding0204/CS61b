@@ -29,7 +29,7 @@ public class RadixSort {
         }
 
         while (maxLen > 0) {
-            sortHelperLSD(strings, maxLen - 1);
+            strings = sortHelperLSD(strings, maxLen - 1);
             maxLen--;
         }
 
@@ -42,12 +42,12 @@ public class RadixSort {
      * @param asciis Input array of Strings
      * @param index The position to sort the Strings on.
      */
-    private static void sortHelperLSD(String[] asciis, int index) {
+    private static String[] sortHelperLSD(String[] asciis, int index) {
         // Optional LSD helper method for required LSD radix sort
         int[] counts = new int[257];
         assignCounts(counts, asciis, index);
         int[] ends = endIndices(counts);
-        asciis = LSDSort(asciis, ends, index);
+        return LSDSort(asciis, ends, index);
     }
     private static void assignCounts(int[] counts, String[] asciis, int index) {
         for (String curr : asciis) {
@@ -101,7 +101,7 @@ public class RadixSort {
     }
 
     public static void main(String[] args) {
-        String[] strings = {"asuka", "apple", "orange", "banana", "king", "zap"};
+        String[] strings = {"asuka", "apple", "orange", "banana", "king", "zap", "a", "ap"};
         String[] sorted = sort(strings);
         System.out.println(Arrays.toString(strings));
         System.out.println(Arrays.toString(sorted));
