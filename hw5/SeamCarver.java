@@ -102,13 +102,13 @@ public class SeamCarver {
     }
     private void cptMinCost() {
          int y = 0;
-         for (int x = 0; x < width - 1; x++) {
+         for (int x = 0; x < width; x++) {
              minCost[x][y] = energy(x, y);
          }
          y += 1;
 
          while (y < height) {
-             for (int x = 0; x < width - 1; x++) {
+             for (int x = 0; x < width; x++) {
                  int[] minNbr = getMinNbr(getNeighbors(x, y));
                  minCost[x][y] = energy(x, y) + minCost[minNbr[0]][minNbr[1]];
              }
@@ -134,6 +134,9 @@ public class SeamCarver {
         double min = Double.MAX_VALUE;
 
         for (int[] nbr : neighbors) {
+            if (nbr == null) {
+                continue;
+            }
             double cost = minCost[nbr[0]][nbr[1]];
             if (cost < min) {
                 min = cost;
@@ -145,17 +148,17 @@ public class SeamCarver {
     }
     private int[] convertToPath(int x) {
         int[] path = new int[height];
-        path[0] = x;
+        path[height - 1] = x;
 
         int[] minNbr = {x, height - 1};
-        for (int i = 1; i < height; i++) {
+        for (int i = height - 2; i >= 0; i--) {
             minNbr = getMinNbr(getNeighbors(minNbr[0], minNbr[1]));
             path[i] = minNbr[0];
         }
 
         return path;
     }
-    public int[] findHorizontalSeam() {
+    public int[] findVerticalSeam() {
         cptMinCost();
         int x = getMinPos();
         return convertToPath(x);
@@ -169,7 +172,7 @@ public class SeamCarver {
         }
         return newPicture;
     }
-    public int[] findVerticalSeam() {
+    public int[] findHorizontalSeam() {
         SeamCarver rotatePic = new SeamCarver(rotatePic(pic));
         return rotatePic.findVerticalSeam();
     }
