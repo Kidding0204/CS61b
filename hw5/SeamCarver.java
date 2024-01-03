@@ -9,11 +9,20 @@ public class SeamCarver {
     private final double[][] energies;
     private final double[][] minCost;
     public SeamCarver(Picture picture) {
-        pic = picture;
-        width = pic.width();
-        height = pic.height();
+        width = picture.width();
+        height = picture.height();
+        pic = copyConstructor(picture);
         energies = new double[width][height];
         minCost = new double[width][height];
+    }
+    private static Picture copyConstructor(Picture picture) {
+        Picture copy = new Picture(picture.width(), picture.height());
+        for (int i = 0; i < picture.width(); i++) {
+            for (int j = 0; j < picture.height(); j++) {
+                copy.set(i, j, picture.get(i, j));
+            }
+        }
+        return copy;
     }
     public Picture picture() {
         return pic;
@@ -25,7 +34,7 @@ public class SeamCarver {
         return height;
     }
     private int[] exceedCheckOp(int x, int y) {
-        int[] result = {x , y};
+        int[] result = {x, y};
 
         if (x == -1) {
             result[0] = width - 1;
@@ -101,19 +110,19 @@ public class SeamCarver {
         return neighbors;
     }
     private void cptMinCost() {
-         int y = 0;
-         for (int x = 0; x < width; x++) {
-             minCost[x][y] = energy(x, y);
-         }
-         y += 1;
+        int y = 0;
+        for (int x = 0; x < width; x++) {
+            minCost[x][y] = energy(x, y);
+        }
+        y += 1;
 
-         while (y < height) {
-             for (int x = 0; x < width; x++) {
-                 int[] minNbr = getMinNbr(getNeighbors(x, y));
-                 minCost[x][y] = energy(x, y) + minCost[minNbr[0]][minNbr[1]];
-             }
-             y++;
-         }
+        while (y < height) {
+            for (int x = 0; x < width; x++) {
+                int[] minNbr = getMinNbr(getNeighbors(x, y));
+                minCost[x][y] = energy(x, y) + minCost[minNbr[0]][minNbr[1]];
+            }
+            y++;
+        }
     }
     private int getMinPos() {
         int minColumn = 0;
