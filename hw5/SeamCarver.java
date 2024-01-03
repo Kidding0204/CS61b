@@ -1,6 +1,6 @@
 import edu.princeton.cs.algs4.Picture;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class SeamCarver {
     private final Picture pic;
@@ -25,7 +25,7 @@ public class SeamCarver {
         return copy;
     }
     public Picture picture() {
-        return pic;
+        return new Picture(pic);
     }
     public int width() {
         return width;
@@ -103,7 +103,8 @@ public class SeamCarver {
 
         if (x == 0) {
             neighbors[0] = null;
-        } else if (x == width - 1) {
+        }
+        if (x == width - 1) {
             neighbors[2] = null;
         }
 
