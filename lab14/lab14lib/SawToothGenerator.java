@@ -1,9 +1,9 @@
 package lab14lib;
 
 public class SawToothGenerator implements Generator {
-    int period;
-    int state;
-    SawToothGenerator(int period) {
+    private final int period;
+    private int state;
+    public SawToothGenerator(int period) {
         this.period = period;
         state = 0;
     }
