@@ -9,10 +9,7 @@ public class SawToothGenerator implements Generator {
     }
     private double normalize(int x) {
         int frequency = x % period;
-        if (frequency == 0) {
-            return -1;
-        }
-        return (double) (frequency - period / 2) / period;
+        return (double) (frequency - period / 2) / period * 2;
     }
     public double next() {
         state += 1;
