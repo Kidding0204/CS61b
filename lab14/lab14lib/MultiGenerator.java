@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class MultiGenerator implements Generator {
-	private ArrayList<Generator> generators;
+	private final ArrayList<Generator> generators;
 
 	public MultiGenerator(Collection<Generator> gs) {
 		generators = new ArrayList<Generator>();
