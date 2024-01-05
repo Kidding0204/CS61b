@@ -1,4 +1,6 @@
-package lab14lib;
+package lab14;
+
+import lab14lib.Generator;
 
 public class SawToothGenerator implements Generator {
     private final int period;

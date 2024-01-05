@@ -1,6 +1,7 @@
-package lab14lib;
+package lab14;
 
 import lab14.SineWaveGenerator;
+import lab14lib.Generator;
 
 public class AcceleratingSawToothGenerator implements Generator {
     private int state;
