@@ -11,12 +11,10 @@ public class HuffmanDecoder {
         int len = curr.getSequence().length();
         charList.add(curr.getSymbol());
         List<Character> currList = streamConvertToChars(stream.allButFirstNBits(len), trie);
-        if (currList == null) {
-            return charList;
-        } else {
+        if (currList != null) {
             charList.add(currList.removeFirst());
-            return charList;
         }
+        return charList;
     }
     public static void main(String[] args) {
         ObjectReader hufFile = new ObjectReader(args[0]);
