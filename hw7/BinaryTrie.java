@@ -3,7 +3,7 @@ import java.util.*;
 
 public class BinaryTrie implements Serializable {
     private Node root;
-    private static class Node implements Comparable<Node> {
+    private static class Node implements Comparable<Node>, Serializable {
         char item;
         int frequency;
         Node[] children;
