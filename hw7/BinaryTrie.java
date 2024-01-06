@@ -47,11 +47,13 @@ public class BinaryTrie implements Serializable {
             root = pq.remove();
             return;
         }
+
         Node[] twoSmallest = findTwoSmallestNodes(pq);
         int freq = twoSmallest[0].frequency + twoSmallest[1].frequency;
         Node parent = new Node('\0', freq);
         System.arraycopy(twoSmallest, 0, parent.children, 0, 2);
         pq.add(parent);
+
         buildTrie(pq);
     }
     public BinaryTrie(Map<Character, Integer> frequencyTable) {
@@ -62,8 +64,27 @@ public class BinaryTrie implements Serializable {
 
         buildTrie(pq);
     }
+    private int longestPrefixNum(BitSequence querySequence, Node pre) {
+        int index = querySequence.bitAt(0);
+        Node curr = pre.children[index];
+        if (curr == null) {
+            return 0;
+        }
+        BitSequence lastSeq = querySequence.lastNBits(querySequence.length() - 1);
+        int count = longestPrefixNum(lastSeq, curr);
+        return count + 1;
+    }
     public Match longestPrefixMatch(BitSequence querySequence) {
-        return null;
+        int prefixNum = longestPrefixNum(querySequence, root);
+        BitSequence prefix = querySequence.firstNBits(prefixNum);
+
+        Node end = root;
+        for (int i = 0; i < prefixNum; i++) {
+            int index = prefix.bitAt(i);
+            end = end.children[index];
+        }
+
+        return new Match(prefix, end.item);
     }
     public Map<Character, BitSequence> buildLookupTable() {
         return null;
