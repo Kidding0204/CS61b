@@ -4,16 +4,14 @@ import java.util.List;
 public class HuffmanDecoder {
     private static List<Character> streamConvertToChars(BitSequence stream, BinaryTrie trie) {
         List<Character> charList = new LinkedList<>();
-        if (stream.length() == 0) {
-            return null;
+
+        while (stream.length() != 0) {
+            Match curr = trie.longestPrefixMatch(stream);
+            charList.add(curr.getSymbol());
+            int len = curr.getSequence().length();
+            stream = stream.allButFirstNBits(len);
         }
-        Match curr = trie.longestPrefixMatch(stream);
-        int len = curr.getSequence().length();
-        charList.add(curr.getSymbol());
-        List<Character> currList = streamConvertToChars(stream.allButFirstNBits(len), trie);
-        if (currList != null) {
-            charList.add(currList.removeFirst());
-        }
+
         return charList;
     }
     public static void main(String[] args) {
