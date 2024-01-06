@@ -19,6 +19,31 @@ public class BinaryTrie implements Serializable {
         }
     }
 
+    public BinaryTrie(Map<Character, Integer> frequencyTable) {
+        Node[] nodes = establishNodes(frequencyTable);
+
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        pq.addAll(Arrays.asList(nodes));
+
+        buildTrie(pq);
+    }
+    public Match longestPrefixMatch(BitSequence querySequence) {
+        int prefixNum = longestPrefixNum(querySequence, root);
+        BitSequence prefix = querySequence.firstNBits(prefixNum);
+
+        Node end = root;
+        for (int i = 0; i < prefixNum; i++) {
+            int index = prefix.bitAt(i);
+            end = end.children[index];
+        }
+
+        return new Match(prefix, end.item);
+    }
+    public Map<Character, BitSequence> buildLookupTable() {
+        Map<Character, BitSequence> table = new HashMap<>();
+        depthFirstSearch(table, root, new LinkedList<>());
+        return table;
+    }
     private Node[] establishNodes(Map<Character, Integer> frequencyTable) {
         Node[] nodes = new Node[frequencyTable.size()];
 
@@ -54,14 +79,6 @@ public class BinaryTrie implements Serializable {
 
         buildTrie(pq);
     }
-    public BinaryTrie(Map<Character, Integer> frequencyTable) {
-        Node[] nodes = establishNodes(frequencyTable);
-
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.addAll(Arrays.asList(nodes));
-
-        buildTrie(pq);
-    }
     private int longestPrefixNum(BitSequence querySequence, Node pre) {
         int index = querySequence.bitAt(0);
         Node curr = pre.children[index];
@@ -71,18 +88,6 @@ public class BinaryTrie implements Serializable {
         BitSequence lastSeq = querySequence.lastNBits(querySequence.length() - 1);
         int count = longestPrefixNum(lastSeq, curr);
         return count + 1;
-    }
-    public Match longestPrefixMatch(BitSequence querySequence) {
-        int prefixNum = longestPrefixNum(querySequence, root);
-        BitSequence prefix = querySequence.firstNBits(prefixNum);
-
-        Node end = root;
-        for (int i = 0; i < prefixNum; i++) {
-            int index = prefix.bitAt(i);
-            end = end.children[index];
-        }
-
-        return new Match(prefix, end.item);
     }
     private BitSequence listConvertToSeq(List<Integer> path) {
         BitSequence sequence = new BitSequence();
@@ -102,10 +107,5 @@ public class BinaryTrie implements Serializable {
             depthFirstSearch(table, child, path);
             path.removeLast();
         }
-    }
-    public Map<Character, BitSequence> buildLookupTable() {
-        Map<Character, BitSequence> table = new HashMap<>();
-        depthFirstSearch(table, root, new LinkedList<>());
-        return table;
     }
 }
