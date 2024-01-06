@@ -87,7 +87,7 @@ public class BinaryTrie implements Serializable {
     private BitSequence listConvertToSeq(List<Integer> path) {
         BitSequence sequence = new BitSequence();
         for (int point : path) {
-            sequence.appended(point);
+            sequence = sequence.appended(point);
         }
         return sequence;
     }
