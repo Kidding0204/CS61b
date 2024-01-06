@@ -1,7 +1,5 @@
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class BinaryTrie implements Serializable {
     private Node root;
@@ -86,7 +84,28 @@ public class BinaryTrie implements Serializable {
 
         return new Match(prefix, end.item);
     }
+    private BitSequence listConvertToSeq(List<Integer> path) {
+        BitSequence sequence = new BitSequence();
+        for (int point : path) {
+            sequence.appended(point);
+        }
+        return sequence;
+    }
+    private void depthFirstSearch(Map<Character, BitSequence> table, Node curr, List<Integer> path) {
+        if (curr.item != '\0') {
+            table.put(curr.item, listConvertToSeq(path));
+            return;
+        }
+        for (int i = 0; i < 2; i++) {
+            Node child = curr.children[i];
+            path.add(i);
+            depthFirstSearch(table, child, path);
+            path.removeLast();
+        }
+    }
     public Map<Character, BitSequence> buildLookupTable() {
-        return null;
+        Map<Character, BitSequence> table = new HashMap<>();
+        depthFirstSearch(table, root, new LinkedList<>());
+        return table;
     }
 }
