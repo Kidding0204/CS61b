@@ -1,5 +1,10 @@
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Arrays;
 
 public class BinaryTrie implements Serializable {
     private Node root;
@@ -96,7 +101,10 @@ public class BinaryTrie implements Serializable {
         }
         return sequence;
     }
-    private void depthFirstSearch(Map<Character, BitSequence> table, Node curr, List<Integer> path) {
+    private void depthFirstSearch(
+            Map<Character, BitSequence> table,
+            Node curr,
+            List<Integer> path) {
         if (curr.item != '\0') {
             table.put(curr.item, listConvertToSeq(path));
             return;
