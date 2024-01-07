@@ -113,7 +113,7 @@ public class BinaryTrie implements Serializable {
             Node child = curr.children[i];
             path.add(i);
             depthFirstSearch(table, child, path);
-            path.removeLast();
+            path.remove(path.size() - 1);
         }
     }
 }

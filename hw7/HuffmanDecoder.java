@@ -24,7 +24,7 @@ public class HuffmanDecoder {
         List<Character> chars = streamConvertToChars(stream, trie);
         char[] arr = new char[chars.size()];
         for (int i = 0; i < chars.size(); i++) {
-            arr[i] = chars.removeFirst();
+            arr[i] = chars.remove(0);
         }
         FileUtils.writeCharArray(args[1], arr);
     }
