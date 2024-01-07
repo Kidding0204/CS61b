@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.List;
 
 public class FileUtils {
     /** Utility method for HuffmanEncoder. */
@@ -17,7 +16,7 @@ public class FileUtils {
     } 
 
     /** Utility method for HuffmanDecoder. */
-    public static void writeCharArray(String filename, List<Character> chars) {
+    public static void writeCharArray(String filename, char[] chars) {
         BinaryOut out = new BinaryOut(filename);
         for (char c : chars) {
             out.write(c);

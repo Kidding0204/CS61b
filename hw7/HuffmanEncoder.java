@@ -19,7 +19,7 @@ public class HuffmanEncoder {
         char[] file8Bit = FileUtils.readFile(args[0]);
         Map<Character, Integer> freqTable = buildFrequencyTable(file8Bit);
         BinaryTrie trie = new BinaryTrie(freqTable);
-        ObjectWriter ow = new ObjectWriter(STR."\{args[0]}.huf");
+        ObjectWriter ow = new ObjectWriter(args[0] + ".huf");
         ow.writeObject(trie);
         Map<Character, BitSequence> table = trie.buildLookupTable();
         List<BitSequence> bitSequences = new ArrayList<>();

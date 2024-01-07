@@ -22,7 +22,10 @@ public class HuffmanDecoder {
         BitSequence stream = (BitSequence) streamO;
 
         List<Character> chars = streamConvertToChars(stream, trie);
-        assert chars != null;
-        FileUtils.writeCharArray(args[1], chars);
+        char[] arr = new char[chars.size()];
+        for (int i = 0; i < chars.size(); i++) {
+            arr[i] = chars.removeFirst();
+        }
+        FileUtils.writeCharArray(args[1], arr);
     }
 }
