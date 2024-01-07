@@ -1,3 +1,5 @@
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,8 +25,10 @@ public class HuffmanDecoder {
 
         List<Character> chars = streamConvertToChars(stream, trie);
         char[] arr = new char[chars.size()];
-        for (int i = 0; i < chars.size(); i++) {
+        int i = 0;
+        while(!chars.isEmpty()) {
             arr[i] = chars.remove(0);
+            i++;
         }
         FileUtils.writeCharArray(args[1], arr);
     }
